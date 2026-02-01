@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Do You Love Rabia?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #ffe6f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 50px;
+      color: #ff3366;
+      padding: 0 20px;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      font-size: 1.5em;
+      margin: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.2s;
+      touch-action: manipulation; /* iOS friendly */
+    }
+
+    #yes {
+      background-color: #ff6699;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    #no {
+      background-color: #999;
+      color: white;
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Do You Love Rabia?</h1>
+  <button id="yes" class="btn">Yes ❤️</button>
+  <button id="no" class="btn">No 😢</button>
+
+  <script>
+    const noBtn = document.getElementById('no');
+    let speed = 3; // starting speed in pixels per frame
+
+    // Get button dimensions
+    let btnWidth = noBtn.offsetWidth;
+    let btnHeight = noBtn.offsetHeight;
+
+    // Keep the button inside the screen
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+
+    // Move the No button away from pointer/finger
+    function moveAway(x, y) {
+      const btnRect = noBtn.getBoundingClientRect();
+      let dx = btnRect.left + btnWidth/2 - x;
+      let dy = btnRect.top + btnHeight/2 - y;
+      const distance = Math.sqrt(dx*dx + dy*dy) || 1; // prevent divide by zero
+
+      // Normalize vector and multiply by speed
+      dx = dx / distance * speed;
+      dy = dy / distance * speed;
+
+      let newX = btnRect.left + dx;
+      let newY = btnRect.top + dy;
+
+      // Clamp within viewport
+      newX = clamp(newX, 0, window.innerWidth - btnWidth);
+      newY = clamp(newY, 0, window.innerHeight - btnHeight);
+
+      noBtn.style.left = newX + 'px';
+      noBtn.style.top = newY + 'px';
+
+      // Increase speed gradually to make it harder
+      speed = Math.min(speed + 0.05, 20);
+    }
+
+    // Mouse movement for desktop
+    document.addEventListener('mousemove', e => {
+      moveAway(e.clientX, e.clientY);
+    });
+
+    // Touch movement for mobile
+    document.addEventListener('touchmove', e => {
+      if(e.touches.length > 0) {
+        const touch = e.touches[0];
+        moveAway(touch.clientX, touch.clientY);
+      }
+    }, { passive: false });
+
+    // Reset speed when Yes is clicked
+    document.getElementById('yes').addEventListener('click', () => {
+      alert('I knew it! ❤️');
+      speed = 3; // reset speed if you want
+    });
+
+    // Update button dimensions on resize
+    window.addEventListener('resize', () => {
+      btnWidth = noBtn.offsetWidth;
+      btnHeight = noBtn.offsetHeight;
+    });
+  </script>
+</body>
+</html>
